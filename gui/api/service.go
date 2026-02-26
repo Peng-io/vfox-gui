@@ -224,10 +224,11 @@ func (s *Service) UseSDK(sdkName, version, scope string) OperationResult {
 	case "session", "s":
 		useScope = env.Session
 	default:
-		useScope = env.Session
+		useScope = env.Global
 	}
 
-	err = sdkInstance.Use(Version(version), useScope)
+	// Use UseForGUI to avoid shell.Open call
+	err = sdkInstance.UseForGUI(Version(version), useScope)
 	if err != nil {
 		return OperationResult{
 			Success: false,

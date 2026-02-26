@@ -55,6 +55,7 @@ type Sdk interface {
 	EnvKeys(runtimePackage *RuntimePackage) (*env.Envs, error)            // Get environment variables for a specific runtime of the SDK
 	Use(version Version, scope env.UseScope) error                        // Use a specific runtime in a given scope
 	UseWithConfig(version Version, scope env.UseScope, unlink bool) error // Use with link configuration
+	UseForGUI(version Version, scope env.UseScope) error                  // Use for GUI apps (no shell spawn)
 	Unuse(scopes ...env.UseScope) error                                   // Unuse the current runtime in a given scope
 	GetRuntimePackage(version Version) (*RuntimePackage, error)           // Get the runtime package for a specific version
 	CheckRuntimeExist(version Version) bool                               // Check if a specific runtime version is installed
@@ -527,6 +528,36 @@ func (e *VersionNotExistsError) Error() string {
 func (b *impl) Use(version Version, scope env.UseScope) error {
 	// Default behavior: project scope uses link=true
 	return b.UseWithConfig(version, scope, false)
+}
+
+// UseForGUI uses a version for GUI applications (no shell spawn)
+// On Windows, always uses global scope and updates registry
+func (b *impl) UseForGUI(version Version, scope env.UseScope) error {
+	logger.Debugf("UseForGUI SDK version: %s, scope: %v\n", string(version), scope)
+
+	// On Windows, force global scope for GUI apps
+	if runtime.GOOS == "windows" {
+		scope = env.Global
+	}
+
+	// Resolve version with preUse hook
+	logger.Debugf("Resolving version with preUse hook for %s\n", version)
+	resolvedVersion, err := b.preUse(version, scope)
+	if err != nil {
+		logger.Debugf("Failed to resolve version: %v\n", err)
+		return err
+	}
+	logger.Debugf("Resolved version: %s\n", resolvedVersion)
+
+	// Verify version exists
+	label := b.Label(resolvedVersion)
+	if !b.CheckRuntimeExist(resolvedVersion) {
+		logger.Debugf("SDK %s not installed\n", label)
+		return &VersionNotExistsError{Label: label}
+	}
+
+	// Use in hook mode with hookEnv=true to skip shell.Open
+	return b.useInHook(resolvedVersion, scope, false, true)
 }
 
 // UseWithConfig uses a version with custom link configuration
