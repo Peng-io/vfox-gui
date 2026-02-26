@@ -1,0 +1,21 @@
+{
+  "name": "vfox-gui",
+  "version": "1.0.0",
+  "description": "A graphical interface for vfox (Version Fox) - Cross-platform SDK version manager",
+  "main": "main.go",
+  "scripts": {
+    "build": "wails build",
+    "dev": "wails dev",
+    "generate": "wails generate module"
+  },
+  "keywords": [
+    "vfox",
+    "version-manager",
+    "sdk",
+    "wails",
+    "vue",
+    "gui"
+  ],
+  "author": "Han Li and contributors",
+  "license": "Apache-2.0"
+}

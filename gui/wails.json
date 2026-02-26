@@ -1,0 +1,20 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "vfox-gui",
+  "outputfilename": "vfox-gui",
+  "frontend:install": "pnpm install",
+  "frontend:build": "pnpm run build",
+  "frontend:dev:watcher": "pnpm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "Han Li and contributors",
+    "email": ""
+  },
+  "info": {
+    "companyName": "vfox",
+    "productName": "vfox-gui",
+    "productVersion": "1.0.0",
+    "copyright": "Copyright 2026 Han Li. All rights reserved.",
+    "comments": "A graphical interface for vfox (Version Fox) - Cross-platform SDK version manager"
+  }
+}

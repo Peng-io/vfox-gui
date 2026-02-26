@@ -10,3 +10,19 @@ coverage.out
 **/.available.cache
 
 .vfox
+
+# GUI (Wails)
+/gui/build/bin/
+/gui/build/.wails/
+/gui/build/appicon.png
+/gui/build/windows/icon.ico
+/gui/frontend/node_modules/
+/gui/frontend/dist/
+/gui/frontend/wailsjs/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib

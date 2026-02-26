@@ -1,0 +1,40 @@
+# Binaries
+build/bin/
+build/.wails/
+build/appicon.png
+build/windows/icon.ico
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/wailsjs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Auto-generated
+frontend/src/auto-imports.d.ts
+frontend/src/components.d.ts
