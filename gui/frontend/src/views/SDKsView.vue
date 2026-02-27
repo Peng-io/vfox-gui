@@ -20,6 +20,8 @@ const selectedSdk = ref<string | null>(null)
 const selectedScope = ref<string>('global')
 const availableVersions = ref<VersionInfo[]>([])
 const loadingVersions = ref(false)
+const installingVersion = ref<string | null>(null)
+const uninstallingVersion = ref<string | null>(null)
 
 const scopeOptions = [
   { label: '全局', value: 'global' },
@@ -53,7 +55,9 @@ async function openVersionsModal(sdkName: string) {
 async function installVersion(version: string) {
   if (!selectedSdk.value) return
   
+  installingVersion.value = version
   const result = await sdkStore.installSDK(selectedSdk.value, version)
+  installingVersion.value = null
   if (result.success) {
     message.success(result.message)
     await openVersionsModal(selectedSdk.value)
@@ -74,7 +78,9 @@ async function useVersion(sdkName: string, version: string) {
 async function uninstallVersion(version: string) {
   if (!selectedSdk.value) return
   
+  uninstallingVersion.value = version
   const result = await sdkStore.uninstallSDK(selectedSdk.value, version)
+  uninstallingVersion.value = null
   if (result.success) {
     message.success(result.message)
     await openVersionsModal(selectedSdk.value)
@@ -172,6 +178,7 @@ async function uninstallVersion(version: string) {
               key: 'actions',
               render: (row: VersionInfo) => {
                 if (row.installed) {
+                  const isUninstalling = uninstallingVersion === row.version
                   return h(NSpace, { size: 'small' }, () => [
                     h(NButton, { 
                       size: 'small', 
@@ -181,14 +188,19 @@ async function uninstallVersion(version: string) {
                     h(NButton, { 
                       size: 'small', 
                       type: 'error',
+                      loading: isUninstalling,
+                      disabled: isUninstalling,
                       onClick: () => uninstallVersion(row.version)
-                    }, { default: () => '卸载' })
+                    }, { default: () => isUninstalling ? '卸载中...' : '卸载' })
                   ])
                 }
+                const isInstalling = installingVersion === row.version
                 return h(NButton, { 
                   size: 'small',
+                  loading: isInstalling,
+                  disabled: isInstalling,
                   onClick: () => installVersion(row.version)
-                }, { default: () => '安装' })
+                }, { default: () => isInstalling ? '安装中...' : '安装' })
               }
             }
           ]"
