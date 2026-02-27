@@ -1,121 +1,123 @@
 # vfox-gui
 
-A graphical user interface for [vfox](https://github.com/version-fox/vfox) (Version Fox), built with Wails and Vue 3.
+[Version Fox](https://github.com/version-fox/vfox) 的图形用户界面，基于 Wails 和 Vue 3 构建。
 
-## Features
+**当前版本：v1.0.6**
 
-- **SDK Management**: View, install, and manage multiple SDK versions
-- **Plugin Management**: Browse and install plugins from the registry
-- **Version Switching**: Easily switch between SDK versions with different scopes
-- **Modern UI**: Clean, dark-themed interface built with Naive UI
-- **Cross-Platform**: Works on Windows, Linux, and macOS
+## 功能特性
 
-## Prerequisites
+- **SDK 管理**：查看、安装和管理多个 SDK 版本
+- **插件管理**：浏览和安装注册中心中的插件
+- **版本切换**：轻松在不同作用域间切换 SDK 版本
+- **现代化 UI**：简洁的深色主题界面，采用 Naive UI 构建
+- **跨平台支持**：支持 Windows、Linux 和 macOS
+
+## 前置要求
 
 - [Go 1.24+](https://golang.org/dl/)
 - [Node.js 18+](https://nodejs.org/)
 - [Wails CLI v2](https://wails.io/docs/gettingstarted/installation/)
 
-## Installation
+## 安装步骤
 
-### Install Wails CLI
+### 安装 Wails CLI
 
 ```bash
 go install github.com/wailsapp/wails/v2/cmd/wails@latest
 ```
 
-### Clone and Build
+### 克隆并构建
 
 ```bash
 cd gui
 
-# Install frontend dependencies
+# 安装前端依赖
 cd frontend && npm install && cd ..
 
-# Run in development mode
+# 开发模式运行
 wails dev
 
-# Build for production
+# 生产环境构建
 wails build
 ```
 
-## Project Structure
+## 项目结构
 
 ```
 gui/
 ├── api/
-│   └── service.go        # API service layer
-├── app.go                # Wails app bindings
-├── main.go               # Application entry point
-├── wails.json            # Wails configuration
-├── go.mod                # Go module file
+│   └── service.go        # API 服务层
+├── app.go                # Wails 应用绑定
+├── main.go               # 应用入口
+├── wails.json            # Wails 配置文件
+├── go.mod                # Go 模块文件
 ├── frontend/
 │   ├── src/
-│   │   ├── components/   # Vue components
-│   │   ├── views/        # Page views
-│   │   ├── stores/       # Pinia stores
-│   │   ├── router/       # Vue Router config
-│   │   ├── styles/       # CSS styles
-│   │   └── types/        # TypeScript types
+│   │   ├── components/   # Vue 组件
+│   │   ├── views/        # 页面视图
+│   │   ├── stores/       # Pinia 状态管理
+│   │   ├── router/       # Vue Router 配置
+│   │   ├── styles/       # CSS 样式
+│   │   └── types/        # TypeScript 类型定义
 │   ├── package.json
 │   └── vite.config.ts
-└── Makefile              # Build automation
+└── Makefile              # 构建自动化脚本
 ```
 
-## Development
+## 开发指南
 
 ```bash
-# Run development server with hot reload
+# 运行开发服务器（支持热重载）
 make dev
 
-# Or directly
+# 或直接运行
 wails dev
 ```
 
-## Building
+## 构建说明
 
 ```bash
-# Build for current platform
+# 为当前平台构建
 make build
 
-# Build for specific platforms
+# 为特定平台构建
 make build-windows
 make build-linux
 make build-darwin
 
-# Build for all platforms
+# 为所有平台构建
 make build-all
 ```
 
-## API Reference
+## API 参考
 
-The GUI exposes the following methods through Wails bindings:
+GUI 通过 Wails 绑定暴露以下方法：
 
-### SDK Operations
+### SDK 操作
 
-| Method | Description |
+| 方法 | 说明 |
 |--------|-------------|
-| `GetInstalledSDKs()` | Get all installed SDKs |
-| `GetAvailableVersions(sdkName)` | Get available versions for an SDK |
-| `InstallSDK(sdkName, version)` | Install a specific version |
-| `UseSDK(sdkName, version, scope)` | Switch to a version |
-| `UninstallSDK(sdkName, version)` | Remove a version |
+| `GetInstalledSDKs()` | 获取所有已安装的 SDK |
+| `GetAvailableVersions(sdkName)` | 获取指定 SDK 的可用版本 |
+| `InstallSDK(sdkName, version)` | 安装指定版本 |
+| `UseSDK(sdkName, version, scope)` | 切换到指定版本（带作用域） |
+| `UninstallSDK(sdkName, version)` | 卸载指定版本 |
 
-### Plugin Operations
+### 插件操作
 
-| Method | Description |
+| 方法 | 说明 |
 |--------|-------------|
-| `GetAvailablePlugins()` | Get plugins from registry |
-| `AddPlugin(name, url)` | Add a plugin |
-| `RemovePlugin(name)` | Remove a plugin |
+| `GetAvailablePlugins()` | 从注册中心获取可用插件 |
+| `AddPlugin(name, url)` | 添加插件 |
+| `RemovePlugin(name)` | 移除插件 |
 
-### Configuration
+### 配置管理
 
-| Method | Description |
+| 方法 | 说明 |
 |--------|-------------|
-| `GetConfig()` | Get current configuration |
-| `Refresh()` | Reload all data |
+| `GetConfig()` | 获取当前配置 |
+| `Refresh()` | 重新加载所有数据 |
 
-## License
+## 许可证
 
 Apache License 2.0
