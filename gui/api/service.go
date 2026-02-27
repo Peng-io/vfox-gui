@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/version-fox/vfox/internal"
 	"github.com/version-fox/vfox/internal/env"
@@ -33,6 +34,10 @@ type Version = sdk.Version
 type Service struct {
 	manager *internal.Manager
 	mu      sync.RWMutex
+	// Plugin registry cache
+	pluginCache       []PluginInfo
+	pluginCacheTime   time.Time
+	pluginCacheExpiry time.Duration
 }
 
 // NewService creates a new API service
@@ -42,7 +47,8 @@ func NewService() (*Service, error) {
 		return nil, fmt.Errorf("failed to create SDK manager: %w", err)
 	}
 	return &Service{
-		manager: manager,
+		manager:           manager,
+		pluginCacheExpiry: 5 * time.Minute, // Cache for 5 minutes
 	}, nil
 }
 
@@ -302,10 +308,27 @@ type PluginInfo struct {
 	Installed   bool   `json:"installed"`
 }
 
-// GetAvailablePlugins returns plugins available in registry
+// GetAvailablePlugins returns plugins available in registry (with caching)
 func (s *Service) GetAvailablePlugins() ([]PluginInfo, error) {
 	s.mu.RLock()
-	defer s.mu.RUnlock()
+	// Check if cache is valid
+	if len(s.pluginCache) > 0 && time.Since(s.pluginCacheTime) < s.pluginCacheExpiry {
+		cached := make([]PluginInfo, len(s.pluginCache))
+		copy(cached, s.pluginCache)
+		s.mu.RUnlock()
+		return cached, nil
+	}
+	s.mu.RUnlock()
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	// Double-check after acquiring write lock
+	if len(s.pluginCache) > 0 && time.Since(s.pluginCacheTime) < s.pluginCacheExpiry {
+		cached := make([]PluginInfo, len(s.pluginCache))
+		copy(cached, s.pluginCache)
+		return cached, nil
+	}
 
 	registry, err := s.manager.Available()
 	if err != nil {
@@ -330,6 +353,10 @@ func (s *Service) GetAvailablePlugins() ([]PluginInfo, error) {
 		})
 	}
 
+	// Update cache
+	s.pluginCache = result
+	s.pluginCacheTime = time.Now()
+
 	return result, nil
 }
 
@@ -345,6 +372,9 @@ func (s *Service) AddPlugin(name, url string) OperationResult {
 			Error:   err.Error(),
 		}
 	}
+
+	// Clear plugin cache after adding
+	s.pluginCache = nil
 
 	return OperationResult{
 		Success: true,
@@ -364,6 +394,9 @@ func (s *Service) RemovePlugin(name string) OperationResult {
 			Error:   err.Error(),
 		}
 	}
+
+	// Clear plugin cache after removal
+	s.pluginCache = nil
 
 	return OperationResult{
 		Success: true,
