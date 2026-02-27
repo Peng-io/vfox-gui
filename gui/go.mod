@@ -3,7 +3,7 @@ module github.com/version-fox/vfox/gui
 go 1.24.0
 
 require (
-	github.com/version-fox/vfox v0.0.0
+	github.com/version-fox/vfox v1.0.6
 	github.com/wailsapp/wails/v2 v2.11.0
 )
 
