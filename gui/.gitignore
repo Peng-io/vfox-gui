@@ -1,8 +1,7 @@
 # Binaries
 build/bin/
 build/.wails/
-build/appicon.png
-build/windows/icon.ico
+
 *.exe
 *.exe~
 *.dll
