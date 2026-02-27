@@ -10,7 +10,7 @@ import {
 } from '@vicons/ionicons5'
 
 const router = useRouter()
-const collapsed = ref(false)
+const collapsed = ref(true)
 
 const menuOptions = [
   {
