@@ -71,6 +71,17 @@ async function useVersion(sdkName: string, version: string) {
   }
 }
 
+async function uninstallVersion(version: string) {
+  if (!selectedSdk.value) return
+  
+  const result = await sdkStore.uninstallSDK(selectedSdk.value, version)
+  if (result.success) {
+    message.success(result.message)
+    await openVersionsModal(selectedSdk.value)
+  } else {
+    message.error(result.error || '卸载失败')
+  }
+}
 
 </script>
 
@@ -161,11 +172,18 @@ async function useVersion(sdkName: string, version: string) {
               key: 'actions',
               render: (row: VersionInfo) => {
                 if (row.installed) {
-                  return h(NButton, { 
-                    size: 'small', 
-                    type: 'primary',
-                    onClick: () => useVersion(selectedSdk!, row.version)
-                  }, { default: () => '使用' })
+                  return h(NSpace, { size: 'small' }, () => [
+                    h(NButton, { 
+                      size: 'small', 
+                      type: 'primary',
+                      onClick: () => useVersion(selectedSdk!, row.version)
+                    }, { default: () => '使用' }),
+                    h(NButton, { 
+                      size: 'small', 
+                      type: 'error',
+                      onClick: () => uninstallVersion(row.version)
+                    }, { default: () => '卸载' })
+                  ])
                 }
                 return h(NButton, { 
                   size: 'small',
