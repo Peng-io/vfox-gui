@@ -1,126 +1,166 @@
-<p style="" align="center">
-  <img src="./logo.png" alt="Logo" width="250" height="250">
-</p>
+# vfox-gui
 
-# vfox
-
-[![Go Report Card](https://img.shields.io/badge/go%20report-A+-brightgreen.svg?style=for-the-badge)](https://goreportcard.com/report/github.com/version-fox/vfox)
 [![GitHub License](https://img.shields.io/github/license/version-fox/vfox?style=for-the-badge)](LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/version-fox/vfox?display_name=tag&style=for-the-badge)](https://github.com/version-fox/vfox/releases)
 
+[Version Fox](https://github.com/version-fox/vfox) 的图形化桌面应用，让你通过直观的可视化界面管理 SDK 版本和插件，无需命令行操作。
 
-[[English]](./README.md) [[中文文档]](./README_CN.md)
+**当前版本：v1.0.6**
 
-If you **switch between development projects which expect different environments**, specifically different runtime versions or ambient libraries,
-or **you are tired of all kinds of cumbersome environment configurations**, `vfox` is the ideal choice for you.
+## 功能特性
 
-## Introduction
+- **仪表盘**：实时查看已安装的 SDK 数量、插件数量，以及当前激活的 SDK 版本概览
+- **SDK 管理**：以卡片形式展示已安装的 SDK，支持安装、卸载、切换版本，并可选择作用域（全局 / 项目 / 会话）
+- **插件管理**：浏览注册中心中的可用插件，一键安装或移除已安装的插件
+- **设置中心**：图形化配置代理、存储路径、镜像源、缓存时长等 vfox 核心参数
+- **深色主题**：基于 Naive UI 构建的现代化深色界面
+- **跨平台**：支持 Windows、Linux 和 macOS
 
-**`vfox` is a cross-platform version manager(similar to `nvm`, `fvm`, `sdkman`, `asdf-vm`, etc.), extendable via plugins**. It allows you to quickly install
-and switch between different environment you need via the command line.
+## 技术栈
 
-## Why use vfox?
+| 层级 | 技术 |
+|------|------|
+| 桌面框架 | [Wails v2](https://wails.io/) |
+| 后端语言 | Go 1.24+ |
+| 前端框架 | Vue 3 + TypeScript |
+| 状态管理 | Pinia |
+| 路由 | Vue Router 4 |
+| UI 组件库 | Naive UI (Dark Theme) |
+| 构建工具 | Vite 5 |
+| 核心引擎 | vfox SDK Manager（直接嵌入，无需外部依赖） |
 
-- **cross-platform support** (**Windows**, Linux, macOS)
-- **consistent commands** to manage all your languages
-- supports **different versions for different projects, different shells, and globally**.
-- simple **plugin system** to add support for your runtime of choice
-- **automatically switches** runtime versions as you traverse your project
-- support for existing config files `.node-version`, `.nvmrc`, `.sdkmanrc` for easy migration
-- shell completion available for common shells (Bash, ZSH, Powershell, Clink)
+## 前置要求
 
-## Demo
+- [Go 1.24+](https://golang.org/dl/)
+- [Node.js 18+](https://nodejs.org/)
+- [Wails CLI v2](https://wails.io/docs/gettingstarted/installation/)
 
-[![asciicast](https://asciinema.org/a/650100.svg)](https://asciinema.org/a/650100)
+## 快速开始
 
-## Quickstart
-
-> For detailed installation instructions, see [Quick Start](https://vfox.dev/guides/quick-start.html)
-
-#### 1. Choose an [installation](https://vfox.dev/guides/quick-start.html#_1-installation) that works for you.
-
-#### 2. ⚠️ **_Hook `vfox` into your shell_ (pick one that works for your shell)** ⚠️
-
-```bash
-echo 'eval "$(vfox activate bash)"' >> ~/.bashrc
-echo 'eval "$(vfox activate zsh)"' >> ~/.zshrc
-echo 'vfox activate fish | source' >> ~/.config/fish/config.fish
-
-# For PowerShell:
-if (-not (Test-Path -Path $PROFILE)) { New-Item -Type File -Path $PROFILE -Force }
-echo 'Invoke-Expression "$(vfox activate pwsh)"' >> $PROFILE
-
-# For Clink:
-# 1. Install clink: https://github.com/chrisant996/clink/releases
-#    Or Install cmder: https://github.com/cmderdev/cmder/releases
-# 2. Find script path: clink info | findstr scripts
-# 3. copy internal/shell/clink_vfox.lua to script path
-
-# For Nushell:
-vfox activate nushell $nu.default-config-dir | save --append $nu.config-path
-```
-
-> Remember to restart your shell to apply the changes.
-
-#### 3. Add an SDK plugin
+### 1. 安装 Wails CLI
 
 ```bash
-$ vfox add nodejs
+go install github.com/wailsapp/wails/v2/cmd/wails@latest
 ```
 
-#### 4. Install a runtime
+### 2. 克隆仓库并进入 GUI 目录
 
 ```bash
-$ vfox install nodejs@21.5.0
+git clone https://github.com/version-fox/vfox.git
+cd vfox/gui
 ```
 
-#### 5. Switch runtime
+### 3. 开发模式（支持热重载）
 
 ```bash
-$ vfox use nodejs@21.5.0
-$ node -v
-21.5.0
+make dev
+# 或
+wails dev
 ```
 
-## Full Documentation
+### 4. 生产构建
 
-See [vfox.dev](https://vfox.dev) for full documentation.
+```bash
+# 为当前平台构建
+make build
 
-## Available Plugins
+# 为指定平台构建
+make build-windows
+make build-linux
+make build-darwin
 
-> If you have installed `vfox`, you can view all available plugins with the `vfox available` command.
+# 为所有平台构建
+make build-all
+```
 
-For more details, see the [Available Plugins](https://vfox.dev/plugins/available.html).
+构建产物位于 `gui/build/bin/` 目录下。
 
-## Contributors
+## 项目结构
 
-> Thanks to following people who contributed to this project. 🎉🎉🙏🙏
+```
+gui/
+├── api/
+│   └── service.go            # API 服务层，封装 vfox internal.Manager
+├── app.go                    # Wails 应用入口与前端绑定
+├── main.go                   # 程序入口
+├── wails.json                # Wails 配置
+├── go.mod                    # Go 模块（通过 replace 指令引用 vfox 核心）
+├── Makefile                  # 构建脚本
+├── frontend/                 # Vue 3 前端应用
+│   ├── src/
+│   │   ├── components/       # 通用组件
+│   │   │   └── AppLayout.vue # 侧边栏布局
+│   │   ├── views/            # 页面视图
+│   │   │   ├── HomeView.vue  # 仪表盘
+│   │   │   ├── SDKsView.vue  # SDK 管理
+│   │   │   ├── PluginsView.vue # 插件管理
+│   │   │   └── SettingsView.vue # 设置
+│   │   ├── stores/           # Pinia 状态管理
+│   │   ├── router/           # 路由配置
+│   │   ├── styles/           # 全局样式
+│   │   └── types/            # TypeScript 类型定义（Wails 绑定）
+│   ├── package.json
+│   └── vite.config.ts
+```
 
-<a href="https://github.com/version-fox/vfox/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=version-fox/vfox" />
-</a>
+## 架构说明
 
-## Contributing
+GUI 应用通过 `go.mod` 中的 `replace` 指令直接引用 vfox 核心代码库（`../`），将 vfox 的 `internal.Manager`、`internal/sdk`、`internal/env` 等内部包嵌入到桌面应用中。这意味着 **GUI 是一个自包含的桌面应用，不依赖外部 vfox 二进制文件**。
 
-Bug reports, contributions and forks are welcome. All bugs or other forms of discussion happen
-on [issues](http://github.com/version-fox/vfox/issues).
+```
+┌─────────────────────────────────────┐
+│          Wails Desktop App          │
+│  ┌───────────────────────────────┐  │
+│  │       Vue 3 Frontend          │  │
+│  │  (Naive UI + Pinia + Router)  │  │
+│  └──────────────┬────────────────┘  │
+│                 │ Wails Bridge       │
+│  ┌──────────────▼────────────────┐  │
+│  │       Go Backend (app.go)     │  │
+│  │  ┌─────────────────────────┐  │  │
+│  │  │  vfox internal.Manager  │  │  │
+│  │  │  (SDK / Plugin / Config)│  │  │
+│  │  └─────────────────────────┘  │  │
+│  └───────────────────────────────┘  │
+└─────────────────────────────────────┘
+```
 
-See more at [CONTRIBUTING.md](./CONTRIBUTING.md).
+## API 参考
 
-Plugin Contributions, please go to [Public Registry](https://github.com/version-fox/vfox-plugins)
+后端通过 Wails 绑定向前端暴露以下方法：
 
+### SDK 操作
 
-## Thanks
+| 方法 | 说明 |
+|------|------|
+| `GetInstalledSDKs()` | 获取所有已安装的 SDK |
+| `GetAvailableVersions(sdkName)` | 获取指定 SDK 的可用版本 |
+| `InstallSDK(sdkName, version)` | 安装指定版本 |
+| `UseSDK(sdkName, version, scope)` | 切换到指定版本（global / project / session） |
+| `UninstallSDK(sdkName, version)` | 卸载指定版本 |
+| `GetCurrentVersions()` | 获取各 SDK 当前激活的版本 |
+| `SearchSDK(sdkName, query)` | 按关键字搜索版本 |
+| `GetSDKInfo(sdkName)` | 获取 SDK 详细信息 |
+| `CheckSDKExists(sdkName, version)` | 检查某版本是否已安装 |
 
-> Thanks JetBrains for the free open source license. :)
+### 插件操作
 
-<a href="https://www.jetbrains.com/?from=gev" target="_blank">
-	<img src="https://i.loli.net/2021/02/08/2aejB8rwNmQR7FG.png" width="200" height="200" />
-</a>
+| 方法 | 说明 |
+|------|------|
+| `GetAvailablePlugins()` | 从注册中心获取可用插件（5 分钟缓存） |
+| `AddPlugin(name, url)` | 安装插件（从注册中心或 URL） |
+| `RemovePlugin(name)` | 移除已安装的插件 |
 
-<a href="https://hellogithub.com/repository/a32a1f2ad04a4b8aa4dd3e1b76c880b2" target="_blank"><img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=a32a1f2ad04a4b8aa4dd3e1b76c880b2&claim_uid=TV6tBSMzmZUWQqk" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+### 配置与工具
 
-## COPYRIGHT
+| 方法 | 说明 |
+|------|------|
+| `GetConfig()` | 获取当前配置 |
+| `SaveConfig(update)` | 保存配置 |
+| `Refresh()` | 重新加载所有 SDK 数据 |
+| `SelectDirectory()` | 打开原生目录选择器 |
+| `ShowAboutDialog()` | 显示关于对话框 |
 
-[Apache 2.0 license](./LICENSE) - Copyright (C) 2026 Han Li
-and [contributors](https://github.com/version-fox/vfox/graphs/contributors)
+## 许可证
+
+[Apache License 2.0](LICENSE) - Copyright (C) 2026 Han Li and [contributors](https://github.com/version-fox/vfox/graphs/contributors)
