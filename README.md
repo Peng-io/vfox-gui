@@ -5,6 +5,8 @@
 
 [Version Fox](https://github.com/version-fox/vfox) 的图形化桌面应用，让你通过直观的可视化界面管理 SDK 版本和插件，无需命令行操作。
 
+> **原项目地址**：[vfox - https://github.com/version-fox/vfox](https://github.com/version-fox/vfox)
+
 **当前版本：v1.0.6**
 
 ## 功能特性
